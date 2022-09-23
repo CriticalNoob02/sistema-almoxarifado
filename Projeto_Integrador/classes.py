@@ -114,7 +114,22 @@ class Estoque(Empresa):
         super().__init__()
         self.filaEspera2 = []
         self.horaFila2 = []
+        self.mapa = {}
 
+    def gerarMapa(self):
+        ## Entrada de Dados;
+        torre = int(input("Qual a Quantidade de Torres para estoque: "))
+        piso = int(input("Qual a Quantidade de pisos em cada torre: "))
+        ## Geração de Mapa;
+        estoque = []
+        for  i in range(1,(torre+1)):
+            for e in range(1,(piso+1)):
+                mapa  = {"Torre":i,
+                         "Piso":e,
+                         "Estado": "Vaziu"
+                        }
+                estoque.append(mapa)
+        print(estoque)
     def addFilaDeEspera2(self,nF):
         self.filaEspera2.append(nF)
         ## Adicionando Hora;
@@ -131,32 +146,25 @@ class Estoque(Empresa):
             print(f"Data e Hora da entrada: {self.horaFila2[i]}")
             print(f"")
 
-    def gerarMapa(self):
-        print("      ___         ___         ___") 
-        print(" P-7  | |    P-7  | |    P-7  | |")
-        print(" P-6  | |    P-6  | |    P-6  | |")
-        print(" P-5  | |    P-5  | |    P-5  | |")
-        print(" P-4  | |    P-4  | |    P-4  | |")
-        print(" P-3  | |    P-3  | |    P-3  | |")
-        print(" P-2  | |    P-2  | |    P-2  | |")
-        print(" P-1  | |    P-1  | |    P-1  | |")
-        print("---------------------------------")
-        print("      T-a         T-b         T-c")
+    def endereçarProduto(self):
+        pass
+
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-= Classe Neto;
 class Sistema(Recebimento, Triagem, Estoque):
     pass
 
-empresa1 = Recebimento()
-empresa1.entradaDeProduto()
-cod = empresa1.transferencia1()
-traigem1 = Triagem()
-traigem1.addFilaDeEspera(cod)
-traigem1.exibirFila()
-cod = traigem1.atualizarQualidade()
+# empresa1 = Recebimento()
+# empresa1.entradaDeProduto()
+# cod = empresa1.transferencia1()
+# traigem1 = Triagem()
+# traigem1.addFilaDeEspera(cod)
+# traigem1.exibirFila()
+# cod = traigem1.atualizarQualidade()
 estoque1 = Estoque()
-estoque1.addFilaDeEspera2(cod)
+# estoque1.addFilaDeEspera2(cod)
 estoque1.exibirFila2()
+estoque1.gerarMapa()
 
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-= Desenho do Almoxarifado;
