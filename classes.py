@@ -325,18 +325,52 @@ class Estoque(Empresa):
         # Entrada de Dados;
         torre = int(input("Digite a Torre:"))
         piso = int(input("Digite o Piso:"))
-        #nf = int(input("Digite a Nota Fiscal do Produto:"))
+        nf = int(input("Digite a Nota Fiscal do Produto:"))
+        ## Recuperando Informação da Tabela;
+        cursor.execute("SELECT Nome, Quantidade FROM produtos WHERE NotaFiscal = ?",(nf,) )
+        for linha in cursor.fetchall():
+            Nome ,Quantidade = linha
+        produto = (f"Produto: {Nome} / Quantidade: {Quantidade}")
+        ## Atualizando Banco de Dados e Self;
         contador = 0
         for i in self.mapa:
             if self.mapa[contador]["Torre"] == torre:
                 if self.mapa[contador]["Piso"] == piso:
-                    self.mapa[contador]["Estado"] = "Cheio"
-                    print (self.mapa)
+                    if self.mapa[contador]["Estado"] != "Vaziu":
+                        print("")
+                        print("Espaço já ocupado!!")
+                        print("")
+                    else:
+                        self.mapa[contador]["Estado"] = "Produto"
+                        cursor.execute('UPDATE estoque SET Estado = ? WHERE Torre = ? AND Piso = ?',(produto,torre,piso))
+                        conexão.commit()
+                        print("Produto Endereçado com Sucesso!")
                 else:
                     pass
             else:
                 pass
             contador += 1
+    
+    ## ACESSO: Almoxarifado;
+    def transferirProduto(self):
+        # Entrada de Dados;
+        print("")
+        torre = int(input("Digite a Torre: "))
+        piso = int(input("Digite o Piso: "))
+        print("")
+        # Recuperando Informações do Banco de Dados:
+        cursor.execute("SELECT Estado FROM estoque WHERE Torre = ? AND Piso = ?",(torre, piso) )
+        for linha in cursor.fetchall():
+            estado = linha[0]
+        # Mostrandos Dados Recuperados;
+        print("-="*30)
+        print(f"O item selecionado é: {estado}")
+        print("-="*30)
+        # tipo de transferencia;
+        tipo = int(input("Digite o tipo de transferencia que deseja fazer: (1- Interna /2- Externa) "))
+        pass
+
+    
 #-=-=-=-=-=-=-=-=-=-=-=-=-= Classe Neto;
 class Sistema(Recebimento, Triagem, Estoque):
     pass
@@ -361,10 +395,12 @@ class Sistema(Recebimento, Triagem, Estoque):
 
 estoque1 = Estoque()
 
-# Estoque;
-estoque1.exibirFila2()
+## Estoque;
+# estoque1.exibirFila2()
 # estoque1.gerarMapa()
-#estoque1.salvaMapa()
+# estoque1.salvaMapa()
 estoque1.carregarMapa()
 estoque1.mostrarMapa()
-estoque1.endereçarProduto()
+# estoque1.endereçarProduto()
+# estoque1.mostrarMapa()
+estoque1.transferirProduto()
