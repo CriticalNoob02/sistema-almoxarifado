@@ -4,7 +4,7 @@ import sqlite3
 from Ferramentas import coresTerminal
 verde,base = coresTerminal(0,3,0)
 vermelho,base = coresTerminal(0,2,0)
-amarelo,base = coresTerminal(0,0,0)
+amarelo,base = coresTerminal(0,4,0)
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-= Banco de Dados;
 conexão = sqlite3.connect("Projeto_Integrador\Estoque.db")
@@ -115,6 +115,7 @@ class Recebimento(Empresa):
         ## Variáveis;
         global verde
         global vermelho
+        global amarelo
         global base
         Confirmação = True
         Confirmação2 = True
@@ -150,10 +151,10 @@ class Recebimento(Empresa):
                 ## Confirmação;
                 print("")
                 print("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")
-                print(f"Nº Nota Fiscal: {nF} ")
+                print(f"{amarelo}Nº Nota Fiscal: {nF} ")
                 print(f"Produto: {nome} ")
                 print(f"Codigo do Produto: {codigo} ")
-                print(f"Quantidade : {quantidade} ")
+                print(f"Quantidade : {quantidade} {base}")
                 print("")
                 resposta = int(input("Confirmar a entrada ?( 1-S / 2-N ) "))
                 print("")
@@ -169,7 +170,7 @@ class Recebimento(Empresa):
                 elif resposta == 2:
                     Confirmação2 = False
                 else: 
-                    print("O valor digitado está incorreto! ")
+                    print(f"{vermelho}O valor digitado está incorreto! {base}")
 
     ## ACESSO: Automatico
     def adicionandoBanco(self):
@@ -180,13 +181,15 @@ class Recebimento(Empresa):
     
     ## ACESSO: Automatico;
     def transferencia1(self):
+        global verde
+        global base
         ## Adicionando Hora;
         dataAtual = datetime.datetime.now()
         dataFormatada = dataAtual.strftime("%d/%m/%Y %H:%M")
         cursor.execute("INSERT INTO listaDeEspera (NotaFiscal,Data) VALUES (?,?) ",(self.nF,dataFormatada))
         conexão.commit()
         print("")
-        print(f"Foi adicionado o produto N°{self.nF} a fila de espera da Triagem")
+        print(f"{verde}Foi adicionado o produto N°{self.nF} a fila de espera da Triagem{base}")
         print("")
         
 class Triagem(Empresa):
@@ -197,15 +200,17 @@ class Triagem(Empresa):
     
     ## ACESSO: Triagem;
     def exibirFila(self):
+        global amarelo
+        global base
         contador = 1
         cursor.execute("SELECT * FROM listaDeEspera")
         for linha in cursor.fetchall():
             notaFiscal,Data = linha
             print(f"")
             print(f"-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-={contador}°")
-            print(f"")
+            print(f"{amarelo}")
             print(f"Produto Cod. {notaFiscal}")
-            print(f"Data e Hora da entrada: {Data}")
+            print(f"Data e Hora da entrada: {Data}{base}")
             print(f"")
             contador += 1
 
@@ -434,11 +439,6 @@ class Sistema(Recebimento, Triagem, Estoque):
         self.nomeUsuário = ""
         self.matricula = ""
         self.acesso = ""
-        # TOTAL: Tem acesso a todas as abas.
-        # COMPRADOR: Tem acesso ao cadastro de produtos e a relatórios de vendas.
-        # RECEBIMENTO: Tem acesso a entrada de produtos na loja.
-        # TRIAGEM: Tem acesso a Fila de espera 1 e ao teste de qualidade.
-        # ALMOXARIFADO: Tem Acesso ao endereçamento de predutos e transferencias.
     
     def cadastroDeFuncionarios(self):
         # Entrada de Produtos;
@@ -510,6 +510,8 @@ class Sistema(Recebimento, Triagem, Estoque):
                 if self.acesso == "RECEBIMENTO"or self.acesso == "TOTAL":
                     resp = True
                     sistema.entradaDeProduto()
+                    sistema.adicionandoBanco()
+                    sistema.transferencia1()
                 else:
                     print("Acesso Negado!!")
             ## Exibir Fila de Espera Triagem;
