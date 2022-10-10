@@ -216,18 +216,26 @@ class Triagem(Empresa):
 
     ## ACESSO: Triagem;
     def atualizarQualidade(self):
+        global vermelho
+        global verde
+        global base
         Confirmação = True
         Confirmação2 = True
         while Confirmação:
             while Confirmação2:
                 cod = 0
                 print("")
-                codigo = int(input("Digite o número da Nota Fiscal do item inspecionado: "))
+                codigo = input("Digite o número da Nota Fiscal do item inspecionado: ")
+                codigo = codigo.strip()
+                if codigo == "":
+                    codigo = 0
+                else:
+                   codigo = int(codigo)
                 cursor.execute("SELECT NotaFiscal FROM listaDeEspera")
                 for linha in cursor.fetchall():
                     cod = linha
                 if cod == 0:
-                    print("Ops, esta NF não está na Fila de Espera!")
+                    print(f"{vermelho}Ops, esta NF não está na Fila de Espera!{base}")
                 else: 
                     cursor.execute("SELECT NotaFiscal FROM produtos WHERE NotaFiscal = ?",(codigo,))
                     for linha in cursor.fetchall():
@@ -254,17 +262,20 @@ class Triagem(Empresa):
                 cursor.execute('UPDATE produtos SET Qualidade = ? WHERE NotaFiscal = ?',("Reprovado",nf))
                 conexão.commit()
             else:
-                print("O Valor de qualidade inserido não está correto!")
+                print(f"{vermelho}O Valor de qualidade inserido não está correto!{base}")
+            print(self.cod)
     
     ## ACESSO: Automatico;
     def transferencia2(self):
+        global verde
+        global base
         ## Adicionando Hora;
         dataAtual = datetime.datetime.now()
         dataFormatada = dataAtual.strftime("%d/%m/%Y %H:%M")
         cursor.execute("INSERT INTO listaDeEspera2 (NotaFiscal,Data) VALUES (?,?) ",(self.cod,dataFormatada))
         conexão.commit()
         print("")
-        print(f"Foi adicionado o produto N°{self.cod} a fila de espera da Triagem")
+        print(f"{verde}Foi adicionado o produto N°{self.cod} a fila de espera da Triagem{base}")
         print("")
 
 class Estoque(Empresa):
@@ -526,6 +537,7 @@ class Sistema(Recebimento, Triagem, Estoque):
                 if self.acesso == "TRIAGEM"or self.acesso == "TOTAL":
                     resp = True
                     sistema.atualizarQualidade()
+                    sistema.transferencia2()
                 else:
                     print("Acesso Negado! ")
             ## Exibir Fila de Espera Estoque;
