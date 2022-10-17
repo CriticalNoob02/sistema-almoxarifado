@@ -30,19 +30,19 @@ while Confirmação1:
     except:
         print(f"{Vermelho}O valor digitado está incorreto!{Base}")
 
-## Menu de Funções;
-print("\n","-="*30,)
-print("Bem Vindo ao Menu!")
-print(f"\n{Amarelo}1- Cadastro de Itens;")
-print("2- Entrada de Produtos;")
-print("3- Exibir Fila de Espera Traigem;")
-print("4- Teste de Qualidade;")
-print("5- Exibir Fila de Espera Estoque;")
-print("6- Exibir Mapa do Estoque;")
-print("7- Endereçar Produto;")
-print("8- Transferencia de Produtos;")
-print(f"9- Gerar Mapa;{Base}")
 while Confirmação2:
+## Menu de Funções;
+    print("\n","-="*30,)
+    print("Bem Vindo ao Menu!")
+    print(f"\n{Amarelo}1- Cadastro de Itens;")
+    print("2- Entrada de Produtos;")
+    print("3- Exibir Fila de Espera Traigem;")
+    print("4- Teste de Qualidade;")
+    print("5- Exibir Fila de Espera Estoque;")
+    print("6- Exibir Mapa do Estoque;")
+    print("7- Endereçar Produto;")
+    print("8- Transferencia de Produtos;")
+    print(f"9- Gerar Mapa;{Base}")
     print("")
     try:
         escolha = int(input("Digite o número correspondente ao menu:"))

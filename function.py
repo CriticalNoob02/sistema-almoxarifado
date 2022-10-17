@@ -2,6 +2,7 @@
 import random
 import datetime
 import sqlite3
+import os
 from Ferramentas import coresTerminal
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-= Declarando Cores;
@@ -79,42 +80,63 @@ class Recebimento(Empresa):
 
     ## ACESSO: Comprador
     def cadastroProdutos(self):
+        ## Declarando Cores;
         global verde
         global vermelho
         global base
+        ## Inicio da Operação;
+        os.system("cls")
+        print("-="*10,f"{Amarelo}Cadastro de Produtos{Base}")
         Confirmação = True
         while Confirmação:
+            Confirmação2 = True
             print("")
-            nome = input("Digite o nome do Produto: ")
-            nome = nome.strip().upper()
-            confirmar = int(input(f"Você gostaria de Cadastrar o Produto: {nome}  (1-S / 2-N)"))
-            
-
-            # if confirm == 1:
-            #     try:
-            #         print("")
-            #         cursor.execute("INSERT INTO produto (Nome,Quantidade) VALUES (?,?)",(nome,0))
-            #         conexão.commit()
-            #         cursor.execute("SELECT Codigo FROM produto WHERE Nome = (?)",(nome,))
-            #         for linha in cursor.fetchall():
-            #             codigo = linha[0]
-            #         print(f"{verde}Produto Cadastrado Com Sucesso!")
-            #         print(f"Nome : {nome}")
-            #         print(f"Código : {codigo} {base}")
-            #         print("")
-            #         Confirmação = False
-            #     except:
-            #         print("")
-            #         print(f"{vermelho}Produto já existente no Sistema!{base}")
-            #         cursor.execute("SELECT Codigo FROM produto WHERE Nome = (?)",(nome,))
-            #         for linha in cursor.fetchall():
-            #             codigo = linha[0]
-            #         print("")
-            #         print(f"{vermelho}Nome: {nome}{base}")
-            #         print(f"{vermelho}Código: {codigo}{base}")
-            #         print("")
-
-
+            try:
+                while Confirmação2:
+                    nome = input("Digite o nome do Produto: ")
+                    nome = nome.strip().upper()
+                    if nome == "":
+                        print(f"{Vermelho}Nome Vaziu!{Base}")
+                    else:
+                        Confirmação2 = False
+                confirmar = int(input(f"Você gostaria de Cadastrar o Produto: {nome}  (1-S / 2-N)"))
+                match confirmar:
+                    case 1:
+                        codigo = ""
+                        cursor.execute("SELECT Codigo FROM produto WHERE Nome = (?)",(nome,))
+                        for linha in cursor.fetchall():
+                            codigo = linha[0]
+                        ## Caso não tenha cadastro;
+                        if codigo == "":
+                            cursor.execute("INSERT INTO produto (Nome,Quantidade) VALUES (?,?)",(nome,0))
+                            conexão.commit()
+                            cursor.execute("SELECT Codigo FROM produto WHERE Nome = (?)",(nome,))
+                            for linha in cursor.fetchall():
+                                codigo = linha[0]
+                            print("")
+                            print(f"{Verde}Produto Cadastrado com sucesso!{Base}")
+                            print("-="*5)
+                            print(f"{Amarelo}Nome: {nome}")
+                            print(f"Código: {codigo} {Base}")
+                            Confirmação = False
+                        ## Caso tenha cadastro;
+                        else:
+                            print("")
+                            print(f"{Vermelho}Produto já Cadastrado!{Base}")
+                            print("-="*5)
+                            print(f"{Amarelo}Nome: {nome}")
+                            print(f"Código: {codigo} {Base}")
+                            Confirmação = False
+                    case 2:
+                        print("")
+                        print("🤙")
+                        print("")
+                    case _:
+                        print("")
+                        print(f"{Vermelho}Valor Inserido não é uma opção!{Base}")
+                        print("")
+            except:
+                print(f"{Vermelho}A Opção escolhida está incorreta!{Base}")
     ## ACESSO: Recebimento
     def entradaDeProduto(self):
         ## Variáveis;
@@ -139,7 +161,7 @@ class Recebimento(Empresa):
                     Confirmação3 = False
                 else:
                     print("")
-                    print(f"{vermelho}Este Item não está Cadastrado no Sistema! Favor entrar em Contato com o setor de Compra...{base}")
+                    print(f"{Vermelho}Este Item não está Cadastrado no Sistema! Favor entrar em Contato com o setor de Compra...{Base}")
                     print("")
             quantidade = int(input("Digite a quatidade recebida: "))
             ## Geração dos Dados;
@@ -156,10 +178,10 @@ class Recebimento(Empresa):
                 ## Confirmação;
                 print("")
                 print("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")
-                print(f"{amarelo}Nº Nota Fiscal: {nF} ")
+                print(f"{Amarelo}Nº Nota Fiscal: {nF} ")
                 print(f"Produto: {nome} ")
                 print(f"Codigo do Produto: {codigo} ")
-                print(f"Quantidade : {quantidade} {base}")
+                print(f"Quantidade : {quantidade} {Base}")
                 print("")
                 resposta = int(input("Confirmar a entrada ?( 1-S / 2-N ) "))
                 print("")
@@ -175,7 +197,7 @@ class Recebimento(Empresa):
                 elif resposta == 2:
                     Confirmação2 = False
                 else: 
-                    print(f"{vermelho}O valor digitado está incorreto! {base}")
+                    print(f"{Vermelho}O valor digitado está incorreto! {Base}")
 
     ## ACESSO: Automatico
     def adicionandoBanco(self):
@@ -194,7 +216,7 @@ class Recebimento(Empresa):
         cursor.execute("INSERT INTO listaDeEspera (NotaFiscal,Data) VALUES (?,?) ",(self.nF,dataFormatada))
         conexão.commit()
         print("")
-        print(f"{verde}Foi adicionado o produto N°{self.nF} a fila de espera da Triagem{base}")
+        print(f"{Verde}Foi adicionado o produto N°{self.nF} a fila de espera da Triagem{Base}")
         print("")
         
 class Triagem(Empresa):
@@ -213,9 +235,9 @@ class Triagem(Empresa):
             notaFiscal,Data = linha
             print(f"")
             print(f"-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-={contador}°")
-            print(f"{amarelo}")
+            print(f"{Amarelo}")
             print(f"Produto Cod. {notaFiscal}")
-            print(f"Data e Hora da entrada: {Data}{base}")
+            print(f"Data e Hora da entrada: {Data}{Base}")
             print(f"")
             contador += 1
 
@@ -240,7 +262,7 @@ class Triagem(Empresa):
                 for linha in cursor.fetchall():
                     cod = linha
                 if cod == 0:
-                    print(f"{vermelho}Ops, esta NF não está na Fila de Espera!{base}")
+                    print(f"{Vermelho}Ops, esta NF não está na Fila de Espera!{Base}")
                 else: 
                     cursor.execute("SELECT NotaFiscal FROM produtos WHERE NotaFiscal = ?",(codigo,))
                     for linha in cursor.fetchall():
@@ -267,7 +289,7 @@ class Triagem(Empresa):
                 cursor.execute('UPDATE produtos SET Qualidade = ? WHERE NotaFiscal = ?',("Reprovado",nf))
                 conexão.commit()
             else:
-                print(f"{vermelho}O Valor de qualidade inserido não está correto!{base}")
+                print(f"{Vermelho}O Valor de qualidade inserido não está correto!{Base}")
             print(self.cod)
     
     ## ACESSO: Automatico;
@@ -280,7 +302,7 @@ class Triagem(Empresa):
         cursor.execute("INSERT INTO listaDeEspera2 (NotaFiscal,Data) VALUES (?,?) ",(self.cod,dataFormatada))
         conexão.commit()
         print("")
-        print(f"{verde}Foi adicionado o produto N°{self.cod} a fila de espera da Triagem{base}")
+        print(f"{Verde}Foi adicionado o produto N°{self.cod} a fila de espera da Triagem{Base}")
         print("")
 
 class Estoque(Empresa):
