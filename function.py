@@ -1,10 +1,13 @@
+#-=-=-=-=-=-=-=-=-=-=-=-=-= Importações;
 import random
 import datetime
 import sqlite3
 from Ferramentas import coresTerminal
-verde,base = coresTerminal(0,3,0)
-vermelho,base = coresTerminal(0,2,0)
-amarelo,base = coresTerminal(0,4,0)
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-= Declarando Cores;
+Verde,Base = coresTerminal(0,3,0)
+Vermelho,Base = coresTerminal(0,2,0)
+Amarelo,Base = coresTerminal(0,4,0)
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-= Banco de Dados;
 conexão = sqlite3.connect("Projeto_Integrador\Estoque.db")
@@ -48,10 +51,9 @@ cursor.execute("CREATE TABLE IF NOT EXISTS estoque("
 ")")
 conexão.commit()
 
-## ERROR: Senha no formato numérico se for 000000 fica como um 0 apenas, transformar em string...
 cursor.execute("CREATE TABLE IF NOT EXISTS perfil("
 "Nome TEXT NOT NULL,"
-"Senha NUM NOT NULL UNIQUE,"
+"Matricula NUM NOT NULL UNIQUE,"
 "Acesso TEXT"
 ")")
 conexão.commit()
@@ -85,30 +87,33 @@ class Recebimento(Empresa):
             print("")
             nome = input("Digite o nome do Produto: ")
             nome = nome.strip().upper()
-            confirm = int(input(f"Você gostaria de Cadastrar o Produto: {nome}  (1-S / 2-N)"))
-            if confirm == 1:
-                try:
-                    print("")
-                    cursor.execute("INSERT INTO produto (Nome,Quantidade) VALUES (?,?)",(nome,0))
-                    conexão.commit()
-                    cursor.execute("SELECT Codigo FROM produto WHERE Nome = (?)",(nome,))
-                    for linha in cursor.fetchall():
-                        codigo = linha[0]
-                    print(f"{verde}Produto Cadastrado Com Sucesso!")
-                    print(f"Nome : {nome}")
-                    print(f"Código : {codigo} {base}")
-                    print("")
-                    Confirmação = False
-                except:
-                    print("")
-                    print(f"{vermelho}Produto já existente no Sistema!{base}")
-                    cursor.execute("SELECT Codigo FROM produto WHERE Nome = (?)",(nome,))
-                    for linha in cursor.fetchall():
-                        codigo = linha[0]
-                    print("")
-                    print(f"{vermelho}Nome: {nome}{base}")
-                    print(f"{vermelho}Código: {codigo}{base}")
-                    print("")
+            confirmar = int(input(f"Você gostaria de Cadastrar o Produto: {nome}  (1-S / 2-N)"))
+            
+
+            # if confirm == 1:
+            #     try:
+            #         print("")
+            #         cursor.execute("INSERT INTO produto (Nome,Quantidade) VALUES (?,?)",(nome,0))
+            #         conexão.commit()
+            #         cursor.execute("SELECT Codigo FROM produto WHERE Nome = (?)",(nome,))
+            #         for linha in cursor.fetchall():
+            #             codigo = linha[0]
+            #         print(f"{verde}Produto Cadastrado Com Sucesso!")
+            #         print(f"Nome : {nome}")
+            #         print(f"Código : {codigo} {base}")
+            #         print("")
+            #         Confirmação = False
+            #     except:
+            #         print("")
+            #         print(f"{vermelho}Produto já existente no Sistema!{base}")
+            #         cursor.execute("SELECT Codigo FROM produto WHERE Nome = (?)",(nome,))
+            #         for linha in cursor.fetchall():
+            #             codigo = linha[0]
+            #         print("")
+            #         print(f"{vermelho}Nome: {nome}{base}")
+            #         print(f"{vermelho}Código: {codigo}{base}")
+            #         print("")
+
 
     ## ACESSO: Recebimento
     def entradaDeProduto(self):
@@ -452,18 +457,31 @@ class Sistema(Recebimento, Triagem, Estoque):
         self.acesso = ""
     
     def cadastroDeFuncionarios(self):
-        # Entrada de Produtos;
-        nome = input("Digite o nome do Funcionário: ")
-        senha = int(input("Digite a Matricula do Funcionário: "))
-        print("")
-        nome = nome.capitalize().strip()
+        # Recuperando Cores para as Funções;
+        global Amarelo
+        global Vermelho
+        global Verde
+        global Base
+        # Entrada e Formatação de Dados;
+        Confirmação1 = True
+        while Confirmação1:
+            nome = input("Digite o nome do Funcionário: ")
+            matricula = input("Digite a Matricula do Funcionário: ")
+            print("")
+            nome = nome.capitalize().strip()
+            matricula = matricula.strip()
+            # Conferindo dados;
+            if nome == "" or len(matricula) != 6:
+                print(f"{Vermelho}O Nome ou Matrícula inseridos estão incorretos!{Base}")
+            else:
+                Confirmação1 = False
         # Entrada e escolha do Acesso;
         print("Tipos de Acesso:")
-        print("1- TOTAL: Tem acesso a todas as abas.")
+        print(f"{Amarelo}1- TOTAL: Tem acesso a todas as abas.")
         print("2- COMPRADOR: Tem acesso ao cadastro de produtos e a relatórios de vendas.")
         print("3- RECEBIMENTO: Tem acesso a entrada de produtos na loja.")
         print("4- TRIAGEM: Tem acesso a Fila de espera 1 e ao teste de qualidade.")
-        print("5- ALMOXARIFADO: Tem Acesso ao endereçamento de predutos e transferencias.")
+        print(f"5- ALMOXARIFADO: Tem Acesso ao endereçamento de predutos e transferencias.{Base}")
         escolhaAcesso = int(input("Digite o número relacionado ao Tipo de ACESSO: "))
         match escolhaAcesso:
             case 1:
@@ -477,33 +495,43 @@ class Sistema(Recebimento, Triagem, Estoque):
             case 5:
                 acesso = "ALMOXARIFADO"
         # Dando entrada no Banco de Dados;
-        cursor.execute("INSERT INTO perfil (Nome,Senha,Acesso) VALUES (?,?,?) ",(nome,senha,acesso))
+        cursor.execute("INSERT INTO perfil (Nome,Matricula,Acesso) VALUES (?,?,?) ",(nome,matricula,acesso))
         conexão.commit()
         # Inserindo na Class;
         self.nomeUsuário = nome
-        self.matricula = senha
+        self.matricula = matricula
         self.acesso = acesso
+        print("")
+        print(f"{Verde}Cadastro Concluido com Sucesso!{Base}")
+        print("")
 
     def login(self):
+        # Recuperando Cores para as Funções;
+        global Amarelo
+        global Vermelho
+        global Verde
+        global Base
+        # Entrada e Formatação de Dados;
         Confirmação = True
         while Confirmação:
-            # Entrada de Dados;
             nome = input("Digite seu Nome: ")
-            matricula = int(input("Digite sua Matricula: "))
+            matricula = input("Digite sua Matricula: ")
+            print("")
             nome = nome.capitalize().strip()
+            matricula = matricula.strip()
             # Testando informações;
             acesso = ""
-            cursor.execute("SELECT Acesso FROM perfil WHERE Nome = ? AND Senha = ?",(nome,matricula))
+            cursor.execute("SELECT Acesso FROM perfil WHERE Nome = ? AND Matricula = ?",(nome,matricula))
             for linha in cursor.fetchall():
                 acesso = linha[0]
-                print(f"Acesso: {acesso}")
             if acesso == "":
-                print("Usuário ou senha incorretos!")
+                print(f"{Vermelho}Usuário ou Matrícula incorretos!{Base}")
             else:
                 self.nomeUsuário = nome
                 self.matricula = matricula
                 self.acesso = acesso
                 Confirmação = False
+                print(f"{Verde}Login efetuado com Sucesso!{Base}")
 
     def menu(self,sistema,escolha):
         ## Declarando Variavel de Resposta;
@@ -515,7 +543,7 @@ class Sistema(Recebimento, Triagem, Estoque):
                     resp = True
                     sistema.cadastroProdutos()
                 else:
-                    print("Acesso Negado!")
+                    print(f"{Vermelho}Acesso Negado!{Base}")
             ## Entrada Item;
             case 2:
                 if self.acesso == "RECEBIMENTO"or self.acesso == "TOTAL":
@@ -524,14 +552,14 @@ class Sistema(Recebimento, Triagem, Estoque):
                     sistema.adicionandoBanco()
                     sistema.transferencia1()
                 else:
-                    print("Acesso Negado!!")
+                    print(f"{Vermelho}Acesso Negado!{Base}")
             ## Exibir Fila de Espera Triagem;
             case 3:
                 if self.acesso == "TRIAGEM"or self.acesso == "TOTAL":
                     resp = True
                     sistema.exibirFila()
                 else:
-                    print("Acesso Negado!")
+                    print(f"{Vermelho}Acesso Negado!{Base}")
             ## Atualiza Qualidade;
             case 4:
                 if self.acesso == "TRIAGEM"or self.acesso == "TOTAL":
@@ -539,14 +567,14 @@ class Sistema(Recebimento, Triagem, Estoque):
                     sistema.atualizarQualidade()
                     sistema.transferencia2()
                 else:
-                    print("Acesso Negado! ")
+                    print(f"{Vermelho}Acesso Negado!{Base}")
             ## Exibir Fila de Espera Estoque;
             case 5:
                 if self.acesso == "ALMOXARIFADO"or self.acesso == "TOTAL":
                     resp = True
                     sistema.exibirFila2()
                 else:
-                    print("Acesso Negado! ")
+                    print(f"{Vermelho}Acesso Negado!{Base}")
             ## Mostrar mapa do Estoque;
             case 6:
                 if self.acesso == "ALMOXARIFADO"or self.acesso == "TOTAL":
@@ -554,7 +582,7 @@ class Sistema(Recebimento, Triagem, Estoque):
                     sistema.carregarMapa()
                     sistema.mostrarMapa()
                 else:
-                    print("Acesso Negado! ")
+                    print(f"{Vermelho}Acesso Negado!{Base}")
             ## Endereçar Produto;
             case 7:
                 if self.acesso == "ALMOXARIFADO"or self.acesso == "TOTAL":
@@ -562,7 +590,7 @@ class Sistema(Recebimento, Triagem, Estoque):
                     sistema.carregarMapa()
                     sistema.endereçarProduto()
                 else:
-                    print("Acesso Negado!")
+                    print(f"{Vermelho}Acesso Negado!{Base}")
             ## Transferir Produto;
             case 8:
                 if self.acesso == "ALMOXARIFADO"or self.acesso == "TOTAL":
@@ -570,7 +598,7 @@ class Sistema(Recebimento, Triagem, Estoque):
                     sistema.carregarMapa()
                     sistema.transferirProduto()
                 else:
-                    print("Acesso Negado!")
+                    print(f"{Vermelho}Acesso Negado!{Base}")
             ## Geração do Mapa do Estoque;
             case 9:
                 if self.acesso == "TOTAL":
@@ -578,47 +606,5 @@ class Sistema(Recebimento, Triagem, Estoque):
                     sistema.gerarMapa()
                     sistema.salvaMapa()
                 else:
-                    print("Acesso Negado")
+                    print(f"{Vermelho}Acesso Negado!{Base}")
         return resp
-
-
-
-
-
-# empresa1 = Recebimento()
-
-# # Comprador;
-# empresa1.cadastroProdutos()
-# # Recebimento;
-# empresa1.entradaDeProduto()
-# # Automatico:
-# empresa1.adicionandoBanco()
-# empresa1.transferencia1()
-
-# traigem1 = Triagem()
-
-# # Triagem;
-# traigem1.exibirFila()
-# traigem1.atualizarQualidade()
-# # Automático;
-# traigem1.transferencia2()
-
-# estoque1 = Estoque()
-
-# # Almoxarifado;
-# estoque1.exibirFila2()
-# estoque1.gerarMapa()
-# # Automático;
-# estoque1.salvaMapa()
-# estoque1.carregarMapa()
-# # Almoxarifado;
-# estoque1.mostrarMapa()
-# estoque1.endereçarProduto()
-# estoque1.mostrarMapa()
-# estoque1.transferirProduto()
-
-# sistema = Sistema()
-
-# sistema.cadastroDeFuncionarios()
-# sistema.login()
-
