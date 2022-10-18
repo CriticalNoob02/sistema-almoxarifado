@@ -81,9 +81,9 @@ class Recebimento(Empresa):
     ## ACESSO: Comprador
     def cadastroProdutos(self):
         ## Declarando Cores;
-        global verde
-        global vermelho
-        global base
+        global Verde
+        global Vermelho
+        global Base
         ## Inicio da Operação;
         os.system("cls")
         print("-="*10,f"{Amarelo}Cadastro de Produtos{Base}")
@@ -137,21 +137,32 @@ class Recebimento(Empresa):
                         print("")
             except:
                 print(f"{Vermelho}A Opção escolhida está incorreta!{Base}")
+    
     ## ACESSO: Recebimento
     def entradaDeProduto(self):
-        ## Variáveis;
-        global verde
-        global vermelho
-        global amarelo
-        global base
+        ## Variáveis e cores;
+        global Verde
+        global Vermelho
+        global Amarelo
+        global Base
         Confirmação = True
         Confirmação2 = True
         Confirmação3 = True
+        Confirmação4 = True
+        ## Inicio da Operação;
+        os.system("cls")
+        print("-="*10,f"{Amarelo}Entrada de Produtos{Base}")
         while Confirmação:
             while Confirmação3:
-                ## Entrada dos Dados;
-                nome = input("Digite o nome do Produto: ")
-                nome = nome.strip().upper()
+                Confirmação4 = True
+                while Confirmação4:
+                    ## Entrada dos Dados;
+                    nome = input("Digite o nome do Produto: ")
+                    nome = nome.strip().upper()
+                    if nome == "":
+                        print(f"{Vermelho}Favor preencher o campo corretamente!{Base}")
+                    else:
+                        Confirmação4 = False
                 ## Recuperando Código:
                 codigo = ""
                 cursor.execute("SELECT Codigo FROM produto WHERE Nome = (?)",(nome,))
@@ -163,41 +174,45 @@ class Recebimento(Empresa):
                     print("")
                     print(f"{Vermelho}Este Item não está Cadastrado no Sistema! Favor entrar em Contato com o setor de Compra...{Base}")
                     print("")
-            quantidade = int(input("Digite a quatidade recebida: "))
-            ## Geração dos Dados;
-            nfL = []
-            for i in range(1,7):
-                num = random.choice(["0","1","2","3","4","5","6","7","8","9"])
-                nfL.append(num)
-            nF = "".join(nfL)
-            ## Captação da Hora;
-            dataAtual = datetime.datetime.now()
-            dataFormatada = dataAtual.strftime("%d/%m/%Y %H:%M")
-            Confirmação2 = True
-            while Confirmação2:
-                ## Confirmação;
-                print("")
-                print("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")
-                print(f"{Amarelo}Nº Nota Fiscal: {nF} ")
-                print(f"Produto: {nome} ")
-                print(f"Codigo do Produto: {codigo} ")
-                print(f"Quantidade : {quantidade} {Base}")
-                print("")
-                resposta = int(input("Confirmar a entrada ?( 1-S / 2-N ) "))
-                print("")
-                if resposta == 1:
-                    ## Salvando Dados;
-                    self.nF = nF
-                    self.nomeProduto = nome
-                    self.codigo = codigo
-                    self.quantidade = quantidade
-                    self.data_hora = dataFormatada
-                    Confirmação = False
-                    Confirmação2 = False
-                elif resposta == 2:
-                    Confirmação2 = False
-                else: 
-                    print(f"{Vermelho}O valor digitado está incorreto! {Base}")
+            try:
+                ## Geração dos Dados;
+                quantidade = int(input("Digite a quatidade recebida: "))
+                nfL = []
+                for i in range(1,7):
+                    num = random.choice(["0","1","2","3","4","5","6","7","8","9"])
+                    nfL.append(num)
+                nF = "".join(nfL)
+                ## Captação da Hora;
+                dataAtual = datetime.datetime.now()
+                dataFormatada = dataAtual.strftime("%d/%m/%Y %H:%M")
+                Confirmação2 = True
+                while Confirmação2:
+                    ## Confirmação;
+                    print("")
+                    print("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")
+                    print(f"{Amarelo}Nº Nota Fiscal: {nF} ")
+                    print(f"Produto: {nome} ")
+                    print(f"Codigo do Produto: {codigo} ")
+                    print(f"Quantidade : {quantidade} {Base}")
+                    print("")
+                    resposta = int(input("Confirmar a entrada ?( 1-S / 2-N ) "))
+                    print("")
+                    match resposta:
+                        case 1:
+                            ## Salvando Dados;
+                            self.nF = nF
+                            self.nomeProduto = nome
+                            self.codigo = codigo
+                            self.quantidade = quantidade
+                            self.data_hora = dataFormatada
+                            Confirmação = False
+                            Confirmação2 = False
+                        case 2:
+                           Confirmação2 = False 
+                        case _:
+                            print(f"{Vermelho}O valor digitado está incorreto!{Base}")
+            except:
+                print(f"{Vermelho}Favor preencher o campo corretamente!{Base}")
 
     ## ACESSO: Automatico
     def adicionandoBanco(self):
@@ -208,8 +223,8 @@ class Recebimento(Empresa):
     
     ## ACESSO: Automatico;
     def transferencia1(self):
-        global verde
-        global base
+        global Verde
+        global Base
         ## Adicionando Hora;
         dataAtual = datetime.datetime.now()
         dataFormatada = dataAtual.strftime("%d/%m/%Y %H:%M")
