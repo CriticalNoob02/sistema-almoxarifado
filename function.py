@@ -9,9 +9,10 @@ from Ferramentas import coresTerminal
 Verde,Base = coresTerminal(0,3,0)
 Vermelho,Base = coresTerminal(0,2,0)
 Amarelo,Base = coresTerminal(0,4,0)
+Azul,Base = coresTerminal(0,7,0)
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-= Banco de Dados;
-conexão = sqlite3.connect("Projeto_Integrador\Estoque.db")
+conexão = sqlite3.connect("Estoque.db")
 cursor = conexão.cursor()
 
 cursor.execute("CREATE TABLE IF NOT EXISTS produto("
@@ -84,9 +85,10 @@ class Recebimento(Empresa):
         global Verde
         global Vermelho
         global Base
+        global Azul
         ## Inicio da Operação;
         os.system("cls")
-        print("-="*10,f"{Amarelo}Cadastro de Produtos{Base}")
+        print(f"{Azul}","-="*10,f"Cadastro de Produtos{Base}")
         Confirmação = True
         while Confirmação:
             Confirmação2 = True
@@ -144,6 +146,7 @@ class Recebimento(Empresa):
         global Verde
         global Vermelho
         global Amarelo
+        global Azul
         global Base
         Confirmação = True
         Confirmação2 = True
@@ -151,7 +154,7 @@ class Recebimento(Empresa):
         Confirmação4 = True
         ## Inicio da Operação;
         os.system("cls")
-        print("-="*10,f"{Amarelo}Entrada de Produtos{Base}")
+        print(f"{Azul}","-="*10,f"Entrada de Produtos{Base}")
         while Confirmação:
             while Confirmação3:
                 Confirmação4 = True
@@ -242,9 +245,13 @@ class Triagem(Empresa):
     
     ## ACESSO: Triagem;
     def exibirFila(self):
-        global amarelo
-        global base
+        global Amarelo
+        global Azul
+        global Base
         contador = 1
+        os.system("cls")
+        print(f"{Azul}","-="*10,f"Fila de Espera{Base}")
+        print("")
         cursor.execute("SELECT * FROM listaDeEspera")
         for linha in cursor.fetchall():
             notaFiscal,Data = linha
@@ -258,9 +265,9 @@ class Triagem(Empresa):
 
     ## ACESSO: Triagem;
     def atualizarQualidade(self):
-        global vermelho
-        global verde
-        global base
+        global Vermelho
+        global Verde
+        global Base
         Confirmação = True
         Confirmação2 = True
         while Confirmação:
@@ -309,8 +316,8 @@ class Triagem(Empresa):
     
     ## ACESSO: Automatico;
     def transferencia2(self):
-        global verde
-        global base
+        global Verde
+        global Base
         ## Adicionando Hora;
         dataAtual = datetime.datetime.now()
         dataFormatada = dataAtual.strftime("%d/%m/%Y %H:%M")
