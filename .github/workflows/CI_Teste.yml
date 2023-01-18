@@ -1,7 +1,7 @@
-      - name: Repository_Dispatch
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          token: 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
-          repository: CriticalNoob02/Cypress-Zeus
-          event-type: Test_CI
-          client-payload: '{"github": ${{ toJson(github) }}}'
+name: Repository_Dispatch
+uses: peter-evans/repository-dispatch@v2
+with:
+  token: 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
+  repository: CriticalNoob02/Cypress-Zeus
+  event-type: Test_CI
+  client-payload: '{"github": ${{ toJson(github) }}}'
